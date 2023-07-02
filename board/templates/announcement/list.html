@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+  <h1 class="title-main">Обьявления</h1>
+{% for announcement in announcements %}
+      <p class="date">
+    Published {{ announcement.publish }} by {{ announcement.author }}
+  </p>
+    <h2>
+      <a href="{{ announcement.get_absolute_url }}">
+        {{ announcement.title }}
+      </a>
+  {% if announcement.image %}
+    <p><img src="{{ announcement.image.url }}"></p>
+{% endif %}
+        <p>
+    {{ announcement.text|truncatewords:20 }}
+            </p>
+    </h2>
+    <hr>
+    {% endfor %}
+{% endblock %}

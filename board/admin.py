@@ -1,5 +1,5 @@
 from django.contrib import admin
-from board.models import Announcement, Comment
+from board.models import Announcement, Comment, Category
 
 
 @admin.register(Announcement)
@@ -19,3 +19,11 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ['name', 'email', 'announcement', 'created', 'active']
     list_filter = ['active', 'created', 'updated']
     search_fields = ['name', 'email', 'text']
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug']
+    list_filter = ['name']
+    search_fields = ['name']
+    prepopulated_fields = {'slug': ('name',)}

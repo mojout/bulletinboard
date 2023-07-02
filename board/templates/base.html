@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html> <html>
+<head>
+<title>
+    {% block title %}
+    {% endblock %}
+</title>
+<link href="{% static "style.css" %}" rel="stylesheet">
+</head>
+<body>
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+<div id="sidebar">
+<h2>Объявления по категориям</h2>
+    {% for c in cat %}
+        <li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>
+    {% endfor %}
+</div>
+</body>
+</html>
