@@ -5,13 +5,12 @@ from board.models import Announcement, Comment, Category
 @admin.register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
 
-    list_display = ['title', 'slug', 'author', 'publish', 'status']
-    list_filter = ['status', 'created', 'author', 'publish']
+    list_display = ['title', 'author', 'publish']
+    list_filter = ['created', 'author', 'publish']
     search_fields = ['title', 'text']
-    prepopulated_fields = {'slug': ('title',)}
     raw_id_fields = ['author']
     date_hierarchy = 'publish'
-    ordering = ['status', 'publish']
+    ordering = ['publish']
 
 
 @admin.register(Comment)
@@ -23,7 +22,7 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug']
+    list_display = ['name']
     list_filter = ['name']
     search_fields = ['name']
-    prepopulated_fields = {'slug': ('name',)}
+

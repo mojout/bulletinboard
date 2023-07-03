@@ -99,3 +99,30 @@ h1.title-main {
     color: #0d812d;
     text-align: center;
 }
+
+#header {
+    background: #83510e;
+    overflow:auto;
+    padding:10px 20px;
+}
+
+#header .logo {
+    text-decoration:none;
+    font-family:'Roboto', sans-serif;
+    font-weight:300;
+    text-transform:uppercase;
+    font-size:24px;
+    color:#fff;
+    float:left;
+}
+
+#header a {
+    color:#fff;
+}
+
+#header .menu {
+    list-style:none;
+    float:right;
+    margin:0;
+    padding:0;
+}

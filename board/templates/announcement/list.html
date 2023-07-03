@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "default.html" %}
 
 
 {% block title %}
@@ -6,15 +6,16 @@
 {% endblock %}
 
 {% block content %}
-  <h1 class="title-main">Обьявления</h1>
 {% for announcement in announcements %}
-      <p class="date">
-    Published {{ announcement.publish }} by {{ announcement.author }}
-  </p>
     <h2>
       <a href="{{ announcement.get_absolute_url }}">
         {{ announcement.title }}
       </a>
+     <p class="date">
+    Опубликовано {{ announcement.publish }} пользователем {{ announcement.author }}</p>
+    <p class="date">
+    Категория {{ announcement.category }}
+     </p>
   {% if announcement.image %}
     <p><img src="{{ announcement.image.url }}"></p>
 {% endif %}
@@ -24,4 +25,23 @@
     </h2>
     <hr>
     {% endfor %}
+       {% if page_obj.has_previous %}
+       <a href="?page=1">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
 {% endblock %}

@@ -5,19 +5,16 @@ from django.utils import timezone
 
 
 class Announcement(models.Model):
-    class Status(models.TextChoices):
-        DRAFT = 'DF', 'Draft'
-        PUBLISHED = 'PB', 'Published'
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250, unique_for_date='publish')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='person')
     text = models.TextField()
     image = models.ImageField(blank=True, upload_to='images/%Y/%m/%d/')
+    url = models.URLField(blank=True)
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    cat = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, verbose_name='Категория')
-    status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, verbose_name='Категория',
+                                 related_name='cats')
 
     class Meta:
         ordering = ['-publish']
@@ -28,10 +25,7 @@ class Announcement(models.Model):
 
     def get_absolute_url(self):
         return reverse('board:announcement_detail',
-                       args=[self.publish.year,
-                             self.publish.month,
-                             self.publish.day,
-                             self.slug])
+                       args=[str(self.id)])
 
 
 class Comment(models.Model):
@@ -41,7 +35,7 @@ class Comment(models.Model):
     text = models.TextField(verbose_name="Отклик")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-created']
@@ -52,11 +46,18 @@ class Comment(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=80, db_index=True, verbose_name='Категория')
-    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='URL')
+    name = models.CharField(max_length=200)
+
+    class Meta:
+        ordering = ['name']
+        indexes = [
+            models.Index(fields=['name'])
+        ]
+        verbose_name = 'category'
+        verbose_name_plural = 'categories'
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('category', kwargs={'cat_slug': self.slug})
+        return reverse('board:category', args=[self.id])

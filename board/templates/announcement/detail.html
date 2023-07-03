@@ -1,11 +1,10 @@
-{% extends "base.html" %}
+{% extends "default.html" %}
 
 {% block title %}
     {{ announcement.title }}
 {% endblock %}
 
 {% block content %}
-    <h1 class="title-main"><a href="{% url "board:announcement_list" %}">На главную страницу</a></h1>
   <h1>{{ announcement.title }}</h1>
   {{ announcement.text }}
 {% endblock %}

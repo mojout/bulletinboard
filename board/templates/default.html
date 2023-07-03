@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html> <html>
+<head>
+<title>
+    {% block title %}
+    {% endblock %}
+</title>
+<link href="{% static "style.css" %}" rel="stylesheet">
+</head>
+<body>
+    <div id="header">
+      <a href="{% url "board:announcement_list" %}" class="logo">Announcements</a>
+      <ul class="menu">
+{% if request.user.is_authenticated %}
+    <a href="{% url 'board:ann_create' %}">Разместить объявление</a>
+{#    <a href="{% url 'board:ann_update' %}">Разместить объявление</a>#}
+    <a href="{% url 'account_logout' %}">Выйти</a>
+{% else %}
+    <a href="{% url 'account_login' %}" >Вход</a>   <a href="{% url 'account_signup' %}" >Регистрация</a>
+{% endif %}
+      </ul>
+    </div>
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+<div id="sidebar">
+<h2>Объявления по категориям</h2>
+{% for c in categories %}
+    <li>
+<a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+    </li>
+{% endfor %}
+</div>
+</body>
+</html>
