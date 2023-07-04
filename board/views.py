@@ -171,7 +171,7 @@ def accept_comment(request, pk):
 
 @login_required()
 def deny_comment(request, pk):
-    response = Comment.objects.get(pk=pk)
-    response.status = False
-    response.save()
+    comment = Comment.objects.get(pk=pk)
+    comment.status = False
+    comment.save()
     return HttpResponseRedirect(reverse('board:comment_list'))
