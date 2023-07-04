@@ -19,7 +19,7 @@ class PostList(ListView):
     model = Announcement
     template_name = 'announcement/list.html'
     context_object_name = 'announcements'
-    paginate_by = 3
+    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -31,7 +31,7 @@ class PostCategory(DataMixin, ListView):
     model = Announcement
     template_name = 'announcement/list.html'
     context_object_name = 'announcements'
-    paginate_by = 3
+    paginate_by = 4
 
     def get_queryset(self):
         self.category = get_object_or_404(Category, id=self.kwargs['pk'])
