@@ -27,5 +27,5 @@ class CommentCreateForm(forms.ModelForm):
             'text',
         ]
         labels = {
-            'Введите ваше сообщение: '
+            'Введите ваше сообщение : '
         }
