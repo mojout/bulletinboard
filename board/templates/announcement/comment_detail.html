@@ -1,0 +1,17 @@
+{% extends 'default.html' %}
+
+{% block content %}
+{{ comment.created|date:'d.m.y' }}
+<hr>
+{{ comment.text }}
+<hr>
+Отправил: {{ comment.user }}<br>
+{% if comment.status == False or comment.status is None %}
+    {% if response.status == True %}
+        <p>{{ comment.text }}</p>
+    {% else %}
+        <a href="{% url 'accept' pk=comment.pk %}"><button>Принять</button></a>
+        <a href="{% url 'deny' pk=comment.pk %}"><button>Отклонить</button></a>
+    {% endif %}
+{% endif %}
+{% endblock content %}

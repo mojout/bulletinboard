@@ -7,4 +7,6 @@
 {% block content %}
   <h1>{{ announcement.title }}</h1>
   {{ announcement.text }}
+    <p><a href="{% url 'board:ann_update' pk=announcement.pk %}"><input type="submit" value="Редактировать" /></a></p>
+    <p><a href="{% url 'board:comment' pk=announcement.pk %}"><input type="submit" value="Написать продавцу" /></a></p>
 {% endblock %}

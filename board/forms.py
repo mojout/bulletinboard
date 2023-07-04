@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 
-from board.models import Announcement
+from board.models import Announcement, Comment
 from django import forms
 
 
@@ -18,3 +18,14 @@ class AddAnnouncementForm(forms.ModelForm):
             raise ValidationError('Длина превышает 200 символов')
 
         return title
+
+
+class CommentCreateForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = [
+            'text',
+        ]
+        labels = {
+            'Введите ваше сообщение: '
+        }
