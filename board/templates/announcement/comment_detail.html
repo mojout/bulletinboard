@@ -10,8 +10,8 @@
     {% if comment.status == True %}
         <p>{{ comment.text }}</p>
     {% else %}
-        <a href="{% url 'accept' pk=comment.pk %}"><button>Принять</button></a>
-        <a href="{% url 'deny' pk=comment.pk %}"><button>Отклонить</button></a>
+        <a href="{% url 'board:accept' pk=comment.announcement.pk %}"><button>Принять</button></a>
+        <a href="{% url 'board:deny' pk=comment.announcement.pk %}"><button>Отклонить</button></a>
     {% endif %}
 {% endif %}
 {% endblock content %}
