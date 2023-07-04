@@ -12,6 +12,7 @@ from django.views.generic import CreateView, ListView, DetailView, UpdateView, T
 
 from board.forms import AddAnnouncementForm, CommentCreateForm
 from board.models import Announcement, Category, Comment
+from board.tasks import ann_created
 from board.utils import DataMixin
 
 
@@ -35,7 +36,7 @@ class PostCategory(DataMixin, ListView):
 
     def get_queryset(self):
         self.category = get_object_or_404(Category, id=self.kwargs['pk'])
-        queryset = Announcement.objects.filter(category=self.category)
+        queryset = Announcement.objects.filter(category=self.category).select_related('category')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -80,6 +81,7 @@ class AnnouncementCreate(LoginRequiredMixin, CreateView):
         if self.request.method == 'POST':
             post.author, created = User.objects.get_or_create(id=self.request.user.id)
             post.save()
+            ann_created()
         return super().form_valid(form)
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -157,7 +159,7 @@ class SuccessView(LoginRequiredMixin, TemplateView):
 @login_required()
 def accept_comment(request, pk):
     comment = Comment.objects.get(pk=pk)
-    comment.status = True
+    comment.active = True
     recipient_email = comment.announcement.author.email
     comment.save()
     send_mail(
@@ -172,6 +174,6 @@ def accept_comment(request, pk):
 @login_required()
 def deny_comment(request, pk):
     comment = Comment.objects.get(pk=pk)
-    comment.status = False
+    comment.active = False
     comment.save()
     return HttpResponseRedirect(reverse('board:comment_list'))
