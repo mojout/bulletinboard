@@ -7,7 +7,7 @@
 <hr>
 Отправил: {{ comment.user }}<br>
 {% if comment.status == False or comment.status is None %}
-    {% if response.status == True %}
+    {% if comment.status == True %}
         <p>{{ comment.text }}</p>
     {% else %}
         <a href="{% url 'accept' pk=comment.pk %}"><button>Принять</button></a>
