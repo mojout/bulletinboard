@@ -10,8 +10,8 @@
                 {% if c.status == True %}
                     <p>{{ c.text }}</p>
                 {% else %}
-                    <a href="{% url 'board:accept' pk=c.pk %}"><button>Принять</button></a>
-                    <a href="{% url 'board:deny' pk=c.pk %}"><button>Отклонить</button></a>
+                    <a href="{% url 'board:accept' pk=c.pk %}"><input type="submit" value="Принять" />
+                    <a href="{% url 'board:deny' pk=c.pk %}"><input type="reset" value="Отклонить" />
                 {% endif %}
             <hr>
         {% endif %}

@@ -3,10 +3,12 @@ import os
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template.context_processors import request
 from django.urls import reverse
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, TemplateView
 
@@ -14,6 +16,7 @@ from board.forms import AddAnnouncementForm, CommentCreateForm
 from board.models import Announcement, Category, Comment
 from board.tasks import ann_created
 from board.utils import DataMixin
+from django.contrib import messages
 
 
 class PostList(ListView):
@@ -35,6 +38,9 @@ class PostCategory(DataMixin, ListView):
     paginate_by = 4
 
     def get_queryset(self):
+        """
+        Убираем два лишних запроса к БД за счет select_related.
+        """
         self.category = get_object_or_404(Category, id=self.kwargs['pk'])
         queryset = Announcement.objects.filter(category=self.category).select_related('category')
         return queryset
@@ -45,18 +51,6 @@ class PostCategory(DataMixin, ListView):
         return context
 
 
-# def AnnouncementList(request, category_slug=None):
-#     category = None
-#     categories = Category.objects.all()
-#     announcements = Announcement.objects.all()
-#     if category_slug:
-#         category = get_object_or_404(Category, slug=category_slug)
-#         announcements = announcements.filter(category=category)
-#     return render(request, 'announcement/list.html', {'announcements': announcements,
-#                                                       'category': category,
-#                                                       'categories': categories})
-#
-#
 class PostDetail(DetailView):
     model = Announcement
     template_name = 'announcement/detail.html'
@@ -67,21 +61,32 @@ class PostDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.object.category
+        context['announcement'] = Announcement.objects.get(pk=self.kwargs['pk'])
+        context['comments'] = Comment.objects.filter(announcement=context['announcement'], active=True)
         return context
 
 
-class AnnouncementCreate(LoginRequiredMixin, CreateView):
+class AnnouncementCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    """
+    Создание нового объявления.
+    """
     permission_required = 'news.add_post'
     form_class = AddAnnouncementForm
     model = Announcement
     template_name = 'announcement/announcement_create.html'
 
     def form_valid(self, form):
+        """
+        ann_created - таска на отправку уведомления всем зарегистрированным пользователям о создании нового объявления.
+        """
         post = form.save(commit=False)
         if self.request.method == 'POST':
             post.author, created = User.objects.get_or_create(id=self.request.user.id)
             post.save()
-            ann_created()
+            messages.success(self.request, 'Объявление успешно создано')
+        else:
+            messages.error(self.request, 'Произошла ошибка, пожалуйста повторите действие или обратитесь к администратору')
+            ann_created(announcement_id=post.id)
         return super().form_valid(form)
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -89,17 +94,21 @@ class AnnouncementCreate(LoginRequiredMixin, CreateView):
         return context
 
 
-class AnnouncementUpdate(LoginRequiredMixin, UpdateView):
+class AnnouncementUpdate(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Announcement
     form_class = AddAnnouncementForm
     template_name = 'announcement/announcement_update.html'
     context_object_name = 'announcement'
+    success_message = "Объявление отредактировано успешно!"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
 
     def get_template_names(self):
+        """
+        Если зарегистрированный пользователь является автором - позволяем редактирование объявления, иначе - статус 403.
+        """
         post = self.get_object()
         if post.author == self.request.user:
             self.template_name = 'announcement/announcement_update.html'
@@ -115,6 +124,9 @@ class CommentCreate(LoginRequiredMixin, CreateView):
     success_url = '/success/'
 
     def form_valid(self, form):
+        """
+        Создаем отклик и отправляем автору объявления письмо о новом отклике.
+        """
         self.object = form.save(commit=False)
         self.object.user = User.objects.get(id=self.request.user.id)
         self.object.announcement = Announcement.objects.get(id=self.kwargs['pk'])
@@ -126,6 +138,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
             from_email=os.getenv('DEFAULT_FROM_EMAIL'),
             recipient_list=[self.object.announcement.author.email]
         )
+        messages.success(self.request, 'Ваш отклик успешно отправлен!')
         return result
 
 
@@ -158,6 +171,9 @@ class SuccessView(LoginRequiredMixin, TemplateView):
 
 @login_required()
 def accept_comment(request, pk):
+    """
+    Отправляем пользователю уведомление по почте, чот его отклик принят.
+    """
     comment = Comment.objects.get(pk=pk)
     comment.active = True
     recipient_email = comment.announcement.author.email
@@ -168,12 +184,18 @@ def accept_comment(request, pk):
         from_email=os.getenv('DEFAULT_FROM_EMAIL'),
         recipient_list=[recipient_email]
     )
+    messages.success(request, 'Отклик принят!')
     return HttpResponseRedirect(reverse('board:comment_list'))
 
 
 @login_required()
 def deny_comment(request, pk):
+    """
+    При нажатии кнопки 'отклонить' - убираем отображение отклика со страницы с объявлением.
+    Реализовано вместо функции удаления, чтобы оставлять отклики в БД, просто меняя их статус.
+    """
     comment = Comment.objects.get(pk=pk)
     comment.active = False
     comment.save()
+    messages.success(request, 'Отклик отклонен!')
     return HttpResponseRedirect(reverse('board:comment_list'))

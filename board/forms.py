@@ -10,7 +10,7 @@ class AddAnnouncementForm(forms.ModelForm):
 
     class Meta:
         model = Announcement
-        fields = ['title', 'text', 'image', 'category']
+        fields = ['title', 'text', 'image', 'category', 'url']
 
     def clean_title(self):
         title = self.cleaned_data['title']

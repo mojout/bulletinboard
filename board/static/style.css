@@ -75,6 +75,16 @@ input[type=submit] {
     padding:10px 20px;
     font-size:14px;
     text-transform:uppercase;
+    float: inherit;
+}
+input[type=reset] {
+    font-weight:bold;
+    background: rgb(229, 7, 7);
+    color:#fff;
+    padding:10px 20px;
+    font-size:14px;
+    text-transform:uppercase;
+    float: inherit;
 }
 .errorlist {
     color:#cc0033;
@@ -125,4 +135,56 @@ h1.title-main {
     float:right;
     margin:0;
     padding:0;
+}
+/* messages */
+ul.messages {
+    margin:10px 100px;
+    padding:0;
+    list-style-type:
+    none;
+}
+ul.messages li.success,
+ul.messages li.warning,
+ul.messages li.error,
+ul.messages li.info {
+    margin:0;
+    padding:14px 20px;
+    list-style:none;
+    color:#fff;
+}
+
+ul.messages li.success { background:#83510e; }
+ul.messages li.success a { color:#0ac33e; }
+
+ul.messages li.error { background:#a30029; color:#e9828e; }
+ul.messages li.error a { color:#e9828e; }
+
+ul.messages li.info { background:#faffae; color:#696b4e; }
+ul.messages li.info a { color:#1586de; }
+
+ul.messages li.warning { background:#de9404; }
+ul.messages li.warning a { color:#f49000; }
+
+ul.messages li a.close {
+    margin:0;
+    float:right;
+    opacity:1;
+    border:0;
+    box-shadow:none;
+    text-shadow:none;
+}
+#footer {
+	box-sizing: border-box;
+
+	background: #022d46;
+	padding: 5px;
+	color: #aaa;
+	font-size: 14px;
+	font-family: 'Oriya MN';
+	text-align: -webkit-left;
+	overflow: hidden;
+}
+#footer a {
+	text-decoration: underline;
+	color: #aaa;
 }
