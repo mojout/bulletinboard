@@ -17,4 +17,5 @@
 By registering, he can post ads and respond to active ads of other users.
 The main page of the site with ads looks like this:
 
+![Screenshot](https://github.com/mojout/bulletinboard/blob/master/media/images/2023/07/02/mainpage.jpg)
 
