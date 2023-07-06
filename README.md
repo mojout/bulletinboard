@@ -14,8 +14,11 @@
 
 ### The above technical task is implemented by the following functionality:
 :arrow_forward: The user can access the placement of ads only after registration, which must be confirmed by the code sent by e-mail.
-By registering, he can post ads and respond to active ads of other users.
+By registering, he can post ads and respond to active ads of other users. Also on the main page it is possible to sort ads into categories.
 The main page of the site with ads looks like this:
 
 ![Screenshot](https://github.com/mojout/bulletinboard/blob/master/media/images/2023/07/02/mainpage.jpg)
 
+On the page of detailed information about the announcement, editing and sending a response to the author of the announcement is available:
+
+![Screenshot](https://github.com/mojout/bulletinboard/blob/master/media/images/2023/07/detail.jpg)
